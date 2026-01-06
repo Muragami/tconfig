@@ -30,6 +30,7 @@ using the data, however.
 A recent PR allowed reading/writing of comment lines.
 
 Added dead simple error handling via a callback and a configurable exit at error flag.
+
 Added the ability to read values as floating point.
 
 For more information on these functions, check out tconfig.h, which I spent a bit of time documenting for easy reading.
