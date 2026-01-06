@@ -227,6 +227,7 @@ bool ini_table_read_from_file(ini_table_s *table, const char *file)
             }
             break;
         case ';':
+        case '#':
             if (state == Value)
             {
                 buf[position++] = c;
@@ -404,6 +405,18 @@ bool ini_table_get_entry_as_int(ini_table_s *table, const char *section_name,
         return false;
     }
     *value = atoi(val);
+    return true;
+}
+
+bool ini_table_get_entry_as_double(ini_table_s *table, const char *section_name,
+                                   const char *key, double *value)
+{
+    const char *val = ini_table_get_entry(table, section_name, key);
+    if (val == NULL)
+    {
+        return false;
+    }
+    *value = atof(val);
     return true;
 }
 

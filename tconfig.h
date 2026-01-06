@@ -119,6 +119,18 @@ bool ini_table_get_entry_as_int(ini_table_s *table, const char *section_name,
 
 /**
  * @brief Retrieves the value of the specified `key' in `section_name', converted
+ *        to double.  Returns false on failure, otherwise true.
+ * @param table
+ * @param section_name
+ * @param key
+ * @param [out]value
+ * @return int
+ */
+bool ini_table_get_entry_as_double(ini_table_s *table, const char *section_name,
+                                const char *key, double *value);
+
+/**
+ * @brief Retrieves the value of the specified `key' in `section_name', converted
  *        to bool.  Returns false on failure, true otherwise.
  * @param table
  * @param section_name
