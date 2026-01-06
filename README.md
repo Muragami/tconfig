@@ -4,7 +4,7 @@ This was an attempt to write something compact and easy to use for reading
 and writing INI files in my projects.
 
 It's able to read most INI formats without any issues.  Comments are delimited by
-the ';' character.
+the ';' or '#' character. Keys can be delimited by either '=' or ':'.
 
 A basic usage example would be something like this:
 ```c
