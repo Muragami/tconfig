@@ -308,6 +308,10 @@ bool ini_table_read_from_file(ini_table_s *table, const char *file)
             break;
         }
     }
+    if (ferror(f))
+    {
+        _ini_error("Error reading ini file", table);
+    }
     free(buf);
     fclose(f);
     return true;
