@@ -295,6 +295,7 @@ bool ini_table_read_from_file(ini_table_s *table, const char *file)
             state = Key;
             break;
         case '=':
+        case ':':
             if (state == Key)
             {
                 state = Value;
