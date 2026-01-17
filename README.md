@@ -1,4 +1,4 @@
-A basic INI reader/writer built in C, with minimal dependencies.
+A basic INI reader/writer built in C, with minimal dependencies (POSIX clib implementation)
 
 This was an attempt to write something compact and easy to use for reading
 and writing INI files in my projects.
@@ -7,7 +7,9 @@ Since it is meant for configuration, it is not optimized in any way, as it is
 not meant to work on large, complex files. If you need that, look elsewhere.
 
 It's able to read most INI formats without any issues.  Comments are delimited by
-the ';' or '#' character. Keys can be delimited by either '=' or ':'.
+the ';' or '#' character. Keys can be delimited by either '=' or ':'. There is no
+support for escaping these characters in keys or values. That is beyond the scope
+of this simple implementation.
 
 A basic usage example would be something like this:
 ```c
