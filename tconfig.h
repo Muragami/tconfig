@@ -1,5 +1,6 @@
 #ifndef _TCONFIG_H_
 #define _TCONFIG_H_
+
 #include <stdbool.h>
 #include <stdarg.h>
 
@@ -43,7 +44,7 @@ typedef struct ini_in
 **/
 typedef struct ini_out
 {
-    int (*vprintf)(void *arg, va_list lst);
+    int (*vprintf)(void *arg, const char *str, va_list lst);
     void *arg;
 } ini_out_s;
 

@@ -329,17 +329,39 @@ bool ini_table_read_from_file(ini_table_s *table, const char *file)
     return result;
 }
 
-static void _ini_fwrite(ini_table_s *table, FILE *f, const char *str, ...)
+static void _ini_write(ini_table_s *table, ini_out_s *out, const char *str, ...)
 {
     va_list args;
     va_start(args, str);
-    if (vfprintf(f, str, args) < 0)
+    if (out->vprintf(out->arg, str, args) < 0)
     {
         _ini_error("Failed to write to ini file", table);
         va_end(args);
         return;
     }
     va_end(args);
+}
+
+bool ini_table_write(ini_table_s *table, ini_out_s *out)
+{
+    for (int i = 0; i < table->size; i++)
+    {
+        ini_section_s *section = &table->section[i];
+        _ini_write(table, out, i > 0 ? "\n[%s]\n" : "[%s]\n", section->name);
+        for (int q = 0; q < section->size; q++)
+        {
+            ini_entry_s *entry = &section->entry[q];
+            if (entry->key[0] == ';')
+            {
+                _ini_write(table, out, "%s\n", entry->key);
+            }
+            else
+            {
+                _ini_write(table, out, "%s = %s\n", entry->key, entry->value);
+            }
+        }
+    }
+    return true;
 }
 
 bool ini_table_write_to_file(ini_table_s *table, const char *file)
@@ -350,20 +372,23 @@ bool ini_table_write_to_file(ini_table_s *table, const char *file)
         _ini_error("Failed to open ini file for writing", table);
         return false;
     }
+    ini_out_s fio;
+    fio.vprintf = (int (*)(void *, const char *, va_list))vfprintf;
+    fio.arg = f;
     for (int i = 0; i < table->size; i++)
     {
         ini_section_s *section = &table->section[i];
-        _ini_write(table, f, i > 0 ? "\n[%s]\n" : "[%s]\n", section->name);
+        _ini_write(table, &fio, i > 0 ? "\n[%s]\n" : "[%s]\n", section->name);
         for (int q = 0; q < section->size; q++)
         {
             ini_entry_s *entry = &section->entry[q];
             if (entry->key[0] == ';')
             {
-                _ini_write(table, f, "%s\n", entry->key);
+                _ini_write(table, &fio, "%s\n", entry->key);
             }
             else
             {
-                _ini_write(table, f, "%s = %s\n", entry->key, entry->value);
+                _ini_write(table, &fio, "%s = %s\n", entry->key, entry->value);
             }
         }
     }
