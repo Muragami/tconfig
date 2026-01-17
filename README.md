@@ -36,5 +36,7 @@ Added the ability to read values as floating point.
 Added the ability to use custom io routines, call ini_table_read() and ini_table_write() with your in/out
 struct.
 
+Added the ability to use a callback for parsing, call ini_read() with the IO struct and callback struct.
+
 For more information on these functions, check out tconfig.h, which I spent a bit of time documenting for easy reading.
 
