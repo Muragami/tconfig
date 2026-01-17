@@ -48,6 +48,20 @@ typedef struct ini_out
     void *arg;
 } ini_out_s;
 
+/** 
+ * The supplied set() function is called for each key/value pair read.
+ * The supplied create() function is called for each section created.
+**/
+typedef struct ini_callback
+{
+    void (*set)(void *arg, const char *key, const char *value);
+    void (*create)(void *arg, const char *section);
+    void *arg;
+} ini_callback_s;
+
+/**
+ * @brief Type definition for error handler function
+ */
 typedef void (*ini_error_handler_t)(const char *error_message, void *p);
 
 /**
@@ -93,6 +107,15 @@ bool ini_table_read_from_file(ini_table_s *table, const char *file);
  * @return ini_table_s*
  */
 bool ini_table_read(ini_table_s *table, ini_in_s *in);
+
+/**
+ * @brief Parses an ini file using the given input struct and calls the
+ *        provided callbacks.
+ * @param in
+ * @param callback
+ * @return ini_table_s*
+ */
+bool ini_read(ini_in_s *in, ini_callback_s *callback);
 
 /**
  * @brief Writes the specified ini_table_s struct to the specified `file'.

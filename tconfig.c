@@ -47,9 +47,14 @@ static void _ini_error(const char *error_message, void *p)
     }
 }
 
-static ini_entry_s *_ini_entry_create(ini_section_s *section,
+static ini_entry_s *_ini_entry_create(ini_callback_s *call, ini_section_s *section,
                                       const char *key, const char *value)
 {
+    if (call && call->set)
+    {
+        call->set(call->arg, key, value);
+        return NULL;
+    }
     if ((section->size % 10) == 0)
     {
         section->entry =
@@ -65,9 +70,14 @@ static ini_entry_s *_ini_entry_create(ini_section_s *section,
     return entry;
 }
 
-static ini_section_s *_ini_section_create(ini_table_s *table,
+static ini_section_s *_ini_section_create(ini_callback_s *call, ini_table_s *table,
                                           const char *section_name)
 {
+    if (call && call->create)
+    {
+        call->create(call->arg, section_name);
+        return NULL;
+    }
     if ((table->size % 10) == 0)
     {
         table->section =
@@ -157,7 +167,7 @@ void ini_table_destroy(ini_table_s *table)
     free(table);
 }
 
-bool ini_table_read(ini_table_s *table, ini_in_s *in)
+bool _ini_read(ini_in_s *in, ini_callback_s *call, ini_table_s *table)
 {
     char error[INI_MAXLEN];
 
@@ -247,18 +257,18 @@ bool ini_table_read(ini_table_s *table, ini_in_s *in)
             {
                 if (current_section == NULL)
                 {
-                    current_section = _ini_section_create(table, "");
+                    current_section = _ini_section_create(call, table, "");
                 }
-                _ini_entry_create(current_section, buf, value);
+                _ini_entry_create(call, current_section, buf, value);
                 value = NULL;
             }
             else if (state == Comment)
             {
                 if (current_section == NULL)
                 {
-                    current_section = _ini_section_create(table, "");
+                    current_section = _ini_section_create(call, table, "");
                 }
-                _ini_entry_create(current_section, buf, "");
+                _ini_entry_create(call, current_section, buf, "");
             }
             else if (state == Section)
             {
@@ -281,7 +291,7 @@ bool ini_table_read(ini_table_s *table, ini_in_s *in)
             state = Section;
             break;
         case ']':
-            current_section = _ini_section_create(table, buf);
+            current_section = _ini_section_create(call, table, buf);
             memset(buf, '\0', buffer_size);
             position = 0;
             spaces = 0;
@@ -310,6 +320,16 @@ bool ini_table_read(ini_table_s *table, ini_in_s *in)
     }
     free(buf);
     return true;
+}
+
+bool ini_read(ini_in_s *in, ini_callback_s *callback)
+{
+    return _ini_read(in, callback, NULL);
+}
+
+bool ini_table_read(ini_table_s *table, ini_in_s *in)
+{
+    return _ini_read(in, NULL, table);
 }
 
 bool ini_table_read_from_file(ini_table_s *table, const char *file)
@@ -402,12 +422,12 @@ void ini_table_create_entry(ini_table_s *table, const char *section_name,
     ini_section_s *section = _ini_section_find(table, section_name);
     if (section == NULL)
     {
-        section = _ini_section_create(table, section_name);
+        section = _ini_section_create(NULL, table, section_name);
     }
     ini_entry_s *entry = _ini_entry_find(section, key);
     if (entry == NULL)
     {
-        entry = _ini_entry_create(section, key, value);
+        entry = _ini_entry_create(NULL, section, key, value);
     }
     else
     {
