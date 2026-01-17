@@ -23,6 +23,12 @@ typedef struct ini_table_s
     int size;
 } ini_table_s;
 
+typedef struct ini_io
+{
+    int (*getc)(void *arg);
+    void *arg;
+} ini_io_s;
+
 typedef void (*ini_error_handler_t)(const char *error_message, void *p);
 
 /**
