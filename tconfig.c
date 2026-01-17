@@ -186,7 +186,7 @@ void ini_table_destroy(ini_table_s *table)
 
 bool _ini_read(ini_in_s *in, ini_callback_s *call, ini_table_s *table)
 {
-    char error[INI_MAXLEN];
+    char error[256];
 
     enum
     {
@@ -291,13 +291,13 @@ bool _ini_read(ini_in_s *in, ini_callback_s *call, ini_table_s *table)
             }
             else if (state == Section)
             {
-                snprintf(error, INI_MAXLEN,
+                snprintf(error, 256,
                          "Section `%s' missing `]' operator.", buf);
                 _ini_error(error, table);
             }
             else if (state == Key && position)
             {
-                snprintf(error, INI_MAXLEN,
+                snprintf(error, 256,
                          "Key `%s' missing `=' operator.", buf);
                 _ini_error(error, table);
             }
@@ -503,7 +503,7 @@ bool ini_table_get_entry_as_bool(ini_table_s *table, const char *section_name,
     {
         return false;
     }
-    if (!strncmp(val, "on", INI_MAXLEN) || !strncmp(val, "true", INI_MAXLEN))
+    if (!strcmp(val, "on") || !strcmp(val, "true"))
     {
         *value = true;
     }

@@ -4,8 +4,6 @@
 #include <stdbool.h>
 #include <stdarg.h>
 
-#define INI_MAXLEN 255
-
 typedef struct ini_entry_s
 {
     char *key;
