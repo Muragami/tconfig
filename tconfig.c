@@ -233,7 +233,7 @@ bool ini_table_read(ini_table_s *table, ini_in_s *in)
                 buf[position++] = c;
                 while (c != EOF && c != '\n')
                 {
-                    c = getc(f);
+                    c = in->getc(in->arg);
                     if (c != EOF && c != '\n')
                         buf[position++] = c;
                 }
