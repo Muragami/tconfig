@@ -65,8 +65,12 @@ static ini_entry_s *_ini_entry_create(ini_callback_s *call, ini_section_s *secti
         }
     }
     ini_entry_s *entry = &section->entry[section->size++];
-    strncpy(entry->key, key, INI_MAXLEN);
-    strncpy(entry->value, value, INI_MAXLEN);
+    entry->key = strdup(key);
+    entry->value = strdup(value);
+    if (entry->key == NULL || entry->value == NULL)
+    {
+        _ini_error("Failed to allocate memory for ini entry key/value", section);
+    }
     return entry;
 }
 
@@ -89,7 +93,7 @@ static ini_section_s *_ini_section_create(ini_callback_s *call, ini_table_s *tab
     }
     ini_section_s *section = &table->section[table->size++];
     section->size = 0;
-    strncpy(section->name, section_name, INI_MAXLEN);
+    section->name = strdup(section_name);
     section->entry = calloc(1, 10 * sizeof(ini_entry_s));
     return section;
 }
@@ -98,7 +102,7 @@ static ini_section_s *_ini_section_find(ini_table_s *table, const char *name)
 {
     for (int i = 0; i < table->size; i++)
     {
-        if (!strncmp(table->section[i].name, name, INI_MAXLEN))
+        if (!strcmp(table->section[i].name, name))
         {
             return &table->section[i];
         }
@@ -110,7 +114,7 @@ static ini_entry_s *_ini_entry_find(ini_section_s *section, const char *key)
 {
     for (int i = 0; i < section->size; i++)
     {
-        if (!strncmp(section->entry[i].key, key, INI_MAXLEN))
+        if (!strcmp(section->entry[i].key, key))
         {
             return &section->entry[i];
         }
@@ -431,7 +435,7 @@ void ini_table_create_entry(ini_table_s *table, const char *section_name,
     }
     else
     {
-        strncpy(entry->value, value, INI_MAXLEN);
+        entry->value = strdup(value);
     }
 }
 

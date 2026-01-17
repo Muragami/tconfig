@@ -8,13 +8,13 @@
 
 typedef struct ini_entry_s
 {
-    char key[INI_MAXLEN + 1];
-    char value[INI_MAXLEN + 1];
+    char *key;
+    char *value;
 } ini_entry_s;
 
 typedef struct ini_section_s
 {
-    char name[INI_MAXLEN + 1];
+    char *name;
     ini_entry_s *entry;
     int size;
 } ini_section_s;
