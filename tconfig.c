@@ -265,7 +265,9 @@ bool _ini_read(ini_in_s *in, ini_callback_s *call, ini_table_s *table)
                         buf[position++] = c;
                 }
             }
-        // fallthrough
+        case '\r':
+        // ignore this character
+            break;
         case '\n':
         // fallthrough
         case EOF:
