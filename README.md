@@ -33,5 +33,8 @@ Added dead simple error handling via a callback and a configurable exit at error
 
 Added the ability to read values as floating point.
 
+Added the ability to use custom io routines, call ini_table_read() and ini_table_write() with your in/out
+struct.
+
 For more information on these functions, check out tconfig.h, which I spent a bit of time documenting for easy reading.
 
