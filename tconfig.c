@@ -27,7 +27,6 @@ SOFTWARE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdarg.h>
 
 #include "tconfig.h"
 
@@ -158,15 +157,9 @@ void ini_table_destroy(ini_table_s *table)
     free(table);
 }
 
-bool ini_table_read_from_file(ini_table_s *table, const char *file)
+bool ini_table_read(ini_table_s *table, ini_in_s *in)
 {
     char error[INI_MAXLEN];
-    FILE *f = fopen(file, "r");
-    if (f == NULL)
-    {
-        _ini_error("Failed to open ini file for reading", table);
-        return false;
-    }
 
     enum
     {
@@ -185,13 +178,13 @@ bool ini_table_read_from_file(ini_table_s *table, const char *file)
     if (buf == NULL)
     {
         _ini_error("Failed to allocate memory for ini parsing buffer", table);
-        fclose(f);
         return false;
     }
 
+    
     ini_section_s *current_section = NULL;
 
-    while ((c = fgetc(f)) != EOF)
+    while ((c = in->getc(in->arg)) != EOF)
     {
         if (position > buffer_size - 2)
         {
@@ -311,13 +304,29 @@ bool ini_table_read_from_file(ini_table_s *table, const char *file)
             break;
         }
     }
-    if (ferror(f))
+    if (in->error(in->arg))
     {
         _ini_error("Error reading ini file", table);
     }
     free(buf);
-    fclose(f);
     return true;
+}
+
+bool ini_table_read_from_file(ini_table_s *table, const char *file)
+{
+    FILE *f = fopen(file, "r");
+    if (f == NULL)
+    {
+        _ini_error("Failed to open ini file for reading", table);
+        return false;
+    }
+    ini_in_s fio;
+    fio.getc = (int (*)(void *))fgetc;
+    fio.error = (int (*)(void *))ferror;
+    fio.arg = f;
+    bool result = ini_table_read(table, &fio);
+    fclose(f);
+    return result;
 }
 
 static void _ini_fwrite(ini_table_s *table, FILE *f, const char *str, ...)

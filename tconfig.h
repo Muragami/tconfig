@@ -1,6 +1,7 @@
 #ifndef _TCONFIG_H_
 #define _TCONFIG_H_
 #include <stdbool.h>
+#include <stdarg.h>
 
 #define INI_MAXLEN 255
 
@@ -23,11 +24,28 @@ typedef struct ini_table_s
     int size;
 } ini_table_s;
 
-typedef struct ini_io
+/** 
+ * The supplied getc function must behave like fgetc(): 
+ * https://pubs.opengroup.org/onlinepubs/007904875/functions/fgetc.html
+ * The supplied error function must behave like ferror():
+ * https://pubs.opengroup.org/onlinepubs/007904875/functions/ferror
+**/
+typedef struct ini_in
 {
     int (*getc)(void *arg);
+    int (*error)(void *arg);
     void *arg;
-} ini_io_s;
+} ini_in_s;
+
+/** 
+ * The supplied vprintf function must behave like vfprintf():
+ * https://pubs.opengroup.org/onlinepubs/009696699/functions/vfprintf.html
+**/
+typedef struct ini_out
+{
+    int (*vprintf)(void *arg, va_list lst);
+    void *arg;
+} ini_out_s;
 
 typedef void (*ini_error_handler_t)(const char *error_message, void *p);
 
@@ -67,6 +85,15 @@ void ini_table_destroy(ini_table_s *table);
 bool ini_table_read_from_file(ini_table_s *table, const char *file);
 
 /**
+ * @brief Creates an ini_table_s struct filled with data using the
+ *        given input struct
+ * @param table
+ * @param in
+ * @return ini_table_s*
+ */
+bool ini_table_read(ini_table_s *table, ini_in_s *in);
+
+/**
  * @brief Writes the specified ini_table_s struct to the specified `file'.
  *        Returns false if the file could not be opened for writing, otherwise
  *        true.
@@ -75,6 +102,15 @@ bool ini_table_read_from_file(ini_table_s *table, const char *file);
  * @return bool
  */
 bool ini_table_write_to_file(ini_table_s *table, const char *file);
+
+/**
+ * @brief Writes the specified ini_table_s struct through the given
+ *        output struct
+ * @param table
+ * @param out
+ * @return bool
+ */
+bool ini_table_write(ini_table_s *table, ini_out_s *out);
 
 /**
  * @brief Creates a new entry in the `table' containing the `key' and `value'
