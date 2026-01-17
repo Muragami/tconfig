@@ -3,6 +3,9 @@ A basic INI reader/writer built in C, with minimal dependencies.
 This was an attempt to write something compact and easy to use for reading
 and writing INI files in my projects.
 
+Since it is meant for configuration, it is not optimized in any way, as it is
+not meant to work on large, complex files. If you need that, look elsewhere.
+
 It's able to read most INI formats without any issues.  Comments are delimited by
 the ';' or '#' character. Keys can be delimited by either '=' or ':'.
 
