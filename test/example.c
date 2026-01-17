@@ -1,8 +1,9 @@
 #include <stdio.h>
-#include "../tconfig.h"
+#include "../tconfig.c" // include the implementation directly for testing
 
 int main(int argc, char *argv[])
 {
+    ini_set_error_exit(false);
     ini_table_s* config = ini_table_create();
     if (!ini_table_read_from_file(config, "test.ini")) 
     {
