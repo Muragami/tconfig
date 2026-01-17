@@ -94,7 +94,16 @@ static ini_section_s *_ini_section_create(ini_callback_s *call, ini_table_s *tab
     ini_section_s *section = &table->section[table->size++];
     section->size = 0;
     section->name = strdup(section_name);
+    if (section->name == NULL)
+    {
+        _ini_error("Failed to allocate memory for ini section name", table);
+        return section;
+    }
     section->entry = calloc(1, 10 * sizeof(ini_entry_s));
+    if (section->entry == NULL)
+    {
+        _ini_error("Failed to allocate memory for ini section entries", table);
+    }
     return section;
 }
 
@@ -157,6 +166,10 @@ ini_table_s *ini_table_create(void)
     }
     table->size = 0;
     table->section = calloc(1, 10 * sizeof(ini_section_s));
+    if (table->section == NULL)
+    {
+        _ini_error("Failed to allocate memory for ini table sections", table);
+    }
     return table;
 }
 
