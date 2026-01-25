@@ -93,7 +93,7 @@ void ini_table_destroy(ini_table_s *table);
  *        `file'.  Returns NULL if the file can not be read.
  * @param table
  * @param file
- * @return ini_table_s*
+ * @return success
  */
 bool ini_table_read_from_file(ini_table_s *table, const char *file);
 
@@ -102,7 +102,7 @@ bool ini_table_read_from_file(ini_table_s *table, const char *file);
  *        given input struct
  * @param table
  * @param in
- * @return ini_table_s*
+ * @return success
  */
 bool ini_table_read(ini_table_s *table, ini_in_s *in);
 
@@ -111,9 +111,17 @@ bool ini_table_read(ini_table_s *table, ini_in_s *in);
  *        provided callbacks.
  * @param in
  * @param callback
- * @return ini_table_s*
+ * @return success
  */
 bool ini_read(ini_in_s *in, ini_callback_s *callback);
+
+/**
+ * @brief Parses an ini file and calls the provided callbacks.
+ * @param fname
+ * @param callback
+ * @return success
+ */
+bool ini_read_file(const char *fname, ini_callback_s *callback);
 
 /**
  * @brief Writes the specified ini_table_s struct to the specified `file'.

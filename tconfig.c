@@ -346,6 +346,21 @@ bool ini_read(ini_in_s *in, ini_callback_s *callback)
     return _ini_read(in, callback, NULL);
 }
 
+bool ini_read_file(const char *fname, ini_callback_s *callback)
+{
+    FILE *f = fopen(fname, "r");
+    if (f == NULL)
+    {
+        _ini_error("Failed to open ini file for reading", NULL);
+        return false;
+    }
+    ini_in_s fio;
+    fio.getc = (int (*)(void *))fgetc;
+    fio.error = (int (*)(void *))ferror;
+    fio.arg = f;
+    return ini_read(&fio, callback);
+}
+
 bool ini_table_read(ini_table_s *table, ini_in_s *in)
 {
     return _ini_read(in, NULL, table);
